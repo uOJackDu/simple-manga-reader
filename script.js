@@ -1,12 +1,14 @@
-const inputFile = document.getElementById("image-input");
+const fileSelection = document.getElementById("file-selection");
+const imgInput = document.getElementById("image-input");
+const galleryView = document.getElementById("gallery-view");
 const gallery = document.getElementById("gallery");
 const menu = document.getElementById("menu");
 
-inputFile.addEventListener("change", handleFileChange);
+imgInput.addEventListener("change", handleFileChange);
 document.addEventListener("keydown", handleKeyPress);
 gallery.addEventListener("click", toggleOpenMenu);
 document.getElementById("reverse-toggle").addEventListener("click", toggleReverse);
-document.getElementById("single-image-toggle").addEventListener("click", toggleSingleImgFirstPage);
+document.getElementById("single-image-first-page-toggle").addEventListener("click", toggleSingleImgFirstPage);
 document.getElementById("single-page-mode-toggle").addEventListener("click", toggleSinglePageMode);
 
 let imgs = [];
@@ -22,8 +24,14 @@ function handleFileChange(event) {
   imgs = Array.from(event.target.files)
     .filter((file) => file.type.match("image.*"))
     .sort((a, b) => a.name.localeCompare(b.name));
+  showGallery();
   displayImgs();
   goToFirstPage();
+}
+
+function showGallery() {
+  fileSelection.style.display = "none";
+  galleryView.style.display = "block";
 }
 
 function displayImgs() {
@@ -68,14 +76,14 @@ function showPanel(idx) {
   if (idx < 0 || panels.length <= idx) {
     return;
   }
-  panels[idx].classList.add("active");
+  panels[idx].style.opacity = "1";
 }
 
 function hidePanel(idx) {
   if (idx < 0 || panels.length <= idx) {
     return;
   }
-  panels[idx].classList.remove("active");
+  panels[idx].style.opacity = "0";
 }
 
 function goToPanel(idx) {
@@ -88,6 +96,21 @@ function goToPanel(idx) {
   showPanel(idx);
   if (prevPanelIdx !== curPanelIdx) {
     hidePanel(prevPanelIdx);
+  }
+  updateGalleryOverflow();
+}
+
+function updateGalleryOverflow() {
+  const panel = panels[curPanelIdx];
+  const panelWidth = panel.offsetWidth;
+  const galleryWidth = gallery.offsetWidth;
+
+  if (panelWidth > galleryWidth) {
+    panel.style.left = '0';
+    panel.style.transform = 'translate(0, 0)';
+    gallery.style.overflowX = 'auto';
+  } else {
+    gallery.style.overflowX = 'hidden';
   }
 }
 

@@ -1,15 +1,26 @@
-.manga-panel {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
+html, body {
+    margin: 0;
     height: 100%;
-    min-width: 100%;
-    justify-content: center;
+}
+
+#gallery-view {
+    height: 100%;
+}
+
+#gallery {
+    position: relative;
+    height: 100%;
     background-color: rgb(32, 32, 32);
 }
-.manga-panel.active {
+
+.manga-panel {
+    opacity: 0;
     display: flex;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%);
+    height: 100%;
 }
 
 img {
