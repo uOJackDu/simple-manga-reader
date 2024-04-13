@@ -7,6 +7,7 @@ document.addEventListener("keydown", handleKeyPress);
 gallery.addEventListener("click", toggleOpenMenu);
 document.getElementById("reverse-toggle").addEventListener("click", toggleReverse);
 document.getElementById("single-image-toggle").addEventListener("click", toggleSingleImgFirstPage);
+document.getElementById("single-page-mode-toggle").addEventListener("click", toggleSinglePageMode);
 
 let imgs = [];
 let panels = [];
@@ -15,6 +16,7 @@ let curPanelIdx = 0;
 
 let reverse = true;
 let singleImgFirstPage = true;
+let singlePageMode = false;
 
 function handleFileChange(event) {
   imgs = Array.from(event.target.files)
@@ -34,7 +36,11 @@ function displayImgs() {
 
     idxs = [i];
 
-    if (!(singleImgFirstPage && i === 0) && i + 1 < imgs.length) {
+    if (
+      !singlePageMode
+      && !(singleImgFirstPage && i === 0)
+      && i + 1 < imgs.length
+    ) {
       idxs.push(i + 1);
       i += 1;
     }
@@ -134,5 +140,10 @@ function toggleReverse() {
 
 function toggleSingleImgFirstPage() {
   singleImgFirstPage = !singleImgFirstPage;
+  displayImgs();
+}
+
+function toggleSinglePageMode() {
+  singlePageMode = !singlePageMode;
   displayImgs();
 }
