@@ -110,6 +110,9 @@ function updateGalleryOverflow() {
     panel.style.transform = 'translate(0, 0)';
     gallery.style.overflowX = 'auto';
   } else {
+    panel.style.left = '50%';
+    panel.style.transform = 'translate(-50%)';
+    gallery.scrollLeft = 0;
     gallery.style.overflowX = 'hidden';
   }
 }
