@@ -1,11 +1,11 @@
 const fileSelection = document.getElementById("file-selection");
 const selectFileButton = document.getElementById("select-file-button");
-const imgInput = document.getElementById("image-input");
+const fileInput = document.getElementById("file-input");
 const gallery = document.getElementById("gallery");
 const menu = document.getElementById("menu");
 
-selectFileButton.addEventListener("click", () => imgInput.click());
-imgInput.addEventListener("change", handleFileChange);
+selectFileButton.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", onFileInputChange);
 document.addEventListener("keydown", handleKeyPress);
 gallery.addEventListener("click", toggleOpenMenu);
 document.getElementById("reverse-toggle").addEventListener("click", toggleReverse);
@@ -22,7 +22,7 @@ let reverse = true;
 let singleImgFirstPage = true;
 let singlePageMode = false;
 
-function handleFileChange(event) {
+function onFileInputChange(event) {
   imgs = Array.from(event.target.files)
     .filter((file) => file.type.match("image.*"))
     .sort((a, b) => a.name.localeCompare(b.name));
