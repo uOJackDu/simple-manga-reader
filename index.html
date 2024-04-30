@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Read</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+  <title>Read</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-    <div id="file-selection">
-        <input type="file" id="image-input" multiple webkitdirectory directory>
+  <div id="file-selection">
+    <div class="page-title">
+      <div>Simple Manga Reader</div>
+      <button class="text-button" id="select-file-button">select</button> file
     </div>
-    <div id="gallery-view" style="display: none;">
-        <div id="gallery"></div>
-        <div id="menu">
-            <button id="reverse-toggle">Toggle Reverse</button>
-            <button id="single-image-first-page-toggle">Toggle Single Image on First Page</button>
-            <button id="single-page-mode-toggle">Toggle Single Page Mode</button>
-        </div>
-    </div>
+  </div>
+  <div id="gallery"></div>
+  <div id="menu">
+    <button id="reverse-toggle">Toggle Reverse</button>
+    <button id="single-image-first-page-toggle">Toggle Single Image on First Page</button>
+    <button id="single-page-mode-toggle">Toggle Single Page Mode</button>
+  </div>
+  <input type="file" id="image-input" multiple webkitdirectory directory>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

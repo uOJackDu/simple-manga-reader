@@ -1,14 +1,16 @@
 const fileSelection = document.getElementById("file-selection");
+const selectFileButton = document.getElementById("select-file-button");
 const imgInput = document.getElementById("image-input");
-const galleryView = document.getElementById("gallery-view");
 const gallery = document.getElementById("gallery");
 const menu = document.getElementById("menu");
 
+selectFileButton.addEventListener("click", () => imgInput.click());
 imgInput.addEventListener("change", handleFileChange);
 document.addEventListener("keydown", handleKeyPress);
 gallery.addEventListener("click", toggleOpenMenu);
 document.getElementById("reverse-toggle").addEventListener("click", toggleReverse);
-document.getElementById("single-image-first-page-toggle").addEventListener("click", toggleSingleImgFirstPage);
+document.getElementById("single-image-first-page-toggle")
+  .addEventListener("click", toggleSingleImgFirstPage);
 document.getElementById("single-page-mode-toggle").addEventListener("click", toggleSinglePageMode);
 
 let imgs = [];
@@ -31,7 +33,7 @@ function handleFileChange(event) {
 
 function showGallery() {
   fileSelection.style.display = "none";
-  galleryView.style.display = "block";
+  gallery.style.display = "block";
 }
 
 function displayImgs() {
@@ -44,11 +46,7 @@ function displayImgs() {
 
     idxs = [i];
 
-    if (
-      !singlePageMode
-      && !(singleImgFirstPage && i === 0)
-      && i + 1 < imgs.length
-    ) {
+    if (!singlePageMode && !(singleImgFirstPage && i === 0) && i + 1 < imgs.length) {
       idxs.push(i + 1);
       i += 1;
     }
@@ -101,19 +99,20 @@ function goToPanel(idx) {
 }
 
 function updateGalleryOverflow() {
+  gallery.style.width = "auto"; // first reset gallery width
+
   const panel = panels[curPanelIdx];
   const panelWidth = panel.offsetWidth;
   const galleryWidth = gallery.offsetWidth;
 
   if (panelWidth > galleryWidth) {
-    panel.style.left = '0';
-    panel.style.transform = 'translate(0, 0)';
-    gallery.style.overflowX = 'auto';
+    panel.style.left = "0";
+    panel.style.transform = "translate(0, 0)";
+    gallery.style.width = `${panelWidth}px`;
   } else {
-    panel.style.left = '50%';
-    panel.style.transform = 'translate(-50%)';
-    gallery.scrollLeft = 0;
-    gallery.style.overflowX = 'hidden';
+    panel.style.left = "50%";
+    panel.style.transform = "translate(-50%)";
+    gallery.style.width = "auto";
   }
 }
 

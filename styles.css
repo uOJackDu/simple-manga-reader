@@ -1,19 +1,36 @@
+.text-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+}
+.text-button:hover {
+    color: #808080;
+}
+
 html, body {
     margin: 0;
     height: 100%;
+    background-color: rgb(32, 32, 32);
+    overflow: auto;
+}
+img {
+    height: 100%;
 }
 
-#gallery-view {
-    height: 100%;
+.page-title {
+    width: 100%;
+    text-align: center;
 }
 
 #gallery {
+    display: none;
     position: relative;
     height: 100%;
     background-color: rgb(32, 32, 32);
-    overflow-x: hidden;
+    overflow: hidden;
 }
-
 .manga-panel {
     opacity: 0;
     display: flex;
@@ -21,10 +38,6 @@ html, body {
     top: 0;
     left: 50%;
     transform: translate(-50%);
-    height: 100%;
-}
-
-img {
     height: 100%;
 }
 
@@ -39,4 +52,13 @@ img {
 }
 #menu.open {
     right: 0;
+}
+
+#file-selection {
+    height: 100%;
+    background-color: rgb(43, 42, 50);
+    color: rgb(255, 255, 255);
+}
+#image-input {
+    display: none;
 }
