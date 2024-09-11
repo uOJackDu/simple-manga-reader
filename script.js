@@ -13,7 +13,10 @@ document.getElementById("single-image-first-page-toggle")
   .addEventListener("click", toggleSingleImgFirstPage);
 document.getElementById("single-page-mode-toggle").addEventListener("click", toggleSinglePageMode);
 
+const CHUNK_SIZE = 64;
+
 let imgs = [];
+let panelSchema = [];
 let panels = [];
 
 let curPanelIdx = 0;
@@ -26,25 +29,16 @@ function onFileInputChange(event) {
   imgs = Array.from(event.target.files)
     .filter((file) => file.type.match("image.*"))
     .sort((a, b) => a.name.localeCompare(b.name));
+  updatePanelSchema();
   showGallery();
-  displayImgs();
-  goToFirstPage();
+  goToStart();
 }
 
-function showGallery() {
-  fileSelection.style.display = "none";
-  gallery.style.display = "block";
-}
-
-function displayImgs() {
-  gallery.innerHTML = ""; // clear
-  panels = [];
+function updatePanelSchema() {
+  panelSchema = [];
 
   for (let i = 0; i < imgs.length; i += 1) {
-    const panel = document.createElement("div");
-    panel.className = "manga-panel";
-
-    idxs = [i];
+    let idxs = [i];
 
     if (!singlePageMode && !(singleImgFirstPage && i === 0) && i + 1 < imgs.length) {
       idxs.push(i + 1);
@@ -53,15 +47,32 @@ function displayImgs() {
     if (reverse) {
       idxs.reverse();
     }
-    idxs.forEach(idx => addImgToPanel(idx, panel));
+    panelSchema.push(idxs);
+  }
+  if (reverse) {
+    panelSchema.reverse();
+  }
+}
+
+function showGallery() {
+  fileSelection.style.display = "none";
+  gallery.style.display = "block";
+}
+
+function loadChunk(chunkIdx) {
+  gallery.innerHTML = ""; // clear
+  panels = [];
+
+  let startIdx = chunkIdx * CHUNK_SIZE;
+  let endIdx = Math.min(panelSchema.length, startIdx + CHUNK_SIZE);
+  for (let i = startIdx; i < endIdx; i += 1) {
+    const panel = document.createElement("div");
+    panel.className = "manga-panel";
+    panelSchema[i].forEach(idx => addImgToPanel(idx, panel));
 
     panels.push(panel);
     gallery.appendChild(panel);
   }
-  if (reverse) {
-    panels.reverse();
-  }
-  goToPanel(curPanelIdx);
 }
 
 function addImgToPanel(idx, panel) {
@@ -70,38 +81,36 @@ function addImgToPanel(idx, panel) {
   panel.appendChild(img);
 }
 
-function showPanel(idx) {
-  if (idx < 0 || panels.length <= idx) {
-    return;
-  }
-  panels[idx].style.opacity = "1";
-}
-
-function hidePanel(idx) {
-  if (idx < 0 || panels.length <= idx) {
-    return;
-  }
-  panels[idx].style.opacity = "0";
-}
-
-function goToPanel(idx) {
-  idx = Math.max(0, idx);
-  idx = Math.min(idx, panels.length - 1);
+function goToPanel(panelIdx, forceLoadChunk = false) {
+  panelIdx = Math.max(0, panelIdx);
+  panelIdx = Math.min(panelIdx, panelSchema.length - 1);
 
   let prevPanelIdx = curPanelIdx;
-  curPanelIdx = idx;
+  curPanelIdx = panelIdx;
 
-  showPanel(idx);
+  if (forceLoadChunk || getChunkIdx(prevPanelIdx) !== getChunkIdx(curPanelIdx)) {
+    loadChunk(getChunkIdx(curPanelIdx));
+  }
+
+  showPanel(curPanelIdx);
   if (prevPanelIdx !== curPanelIdx) {
     hidePanel(prevPanelIdx);
   }
   updateGalleryOverflow();
 }
 
-function updateGalleryOverflow() {
-  gallery.style.width = "auto"; // first reset gallery width
+function showPanel(panelIdx) {
+  panels[getInchunkIdx(panelIdx)].style.opacity = "1";
+}
 
-  const panel = panels[curPanelIdx];
+function hidePanel(panelIdx) {
+  panels[getInchunkIdx(panelIdx)].style.opacity = "0";
+}
+
+function updateGalleryOverflow() {
+  gallery.style.width = "auto"; // reset gallery width
+
+  const panel = panels[getInchunkIdx(curPanelIdx)];
   const panelWidth = panel.offsetWidth;
   const galleryWidth = gallery.offsetWidth;
 
@@ -114,6 +123,14 @@ function updateGalleryOverflow() {
     panel.style.transform = "translate(-50%)";
     gallery.style.width = "auto";
   }
+}
+
+function getChunkIdx(panelIdx) {
+  return Math.floor(panelIdx / CHUNK_SIZE);
+}
+
+function getInchunkIdx(panelIdx) {
+  return panelIdx % CHUNK_SIZE;
 }
 
 function goToNextPanel() {
@@ -129,12 +146,12 @@ function goToFirstPanel() {
 }
 
 function goToLastPanel() {
-  goToPanel(panels.length - 1);
+  goToPanel(panelSchema.length - 1);
 }
 
-function goToFirstPage() {
-  let idx = reverse ? panels.length - 1 : 0;
-  goToPanel(idx);
+function goToStart() {
+  let startPanelIdx = reverse ? panelSchema.length - 1 : 0;
+  goToPanel(startPanelIdx, forceLoadChunk = true);
 }
 
 function handleKeyPress(event) {
@@ -159,16 +176,23 @@ function toggleOpenMenu() {
 
 function toggleReverse() {
   reverse = !reverse;
-  curPanelIdx = (panels.length - 1) - curPanelIdx;
-  displayImgs();
+
+  updatePanelSchema();
+  let newPanelIdx = (panelSchema.length - 1) - curPanelIdx;
+  goToPanel(newPanelIdx, forceLoadChunk = true);
 }
 
 function toggleSingleImgFirstPage() {
   singleImgFirstPage = !singleImgFirstPage;
-  displayImgs();
+
+  updatePanelSchema();
+  goToPanel(curPanelIdx, forceLoadChunk = true);
 }
 
 function toggleSinglePageMode() {
   singlePageMode = !singlePageMode;
-  displayImgs();
+
+  updatePanelSchema();
+  let newPanelIdx = singlePageMode ? 2 * curPanelIdx : Math.floor(curPanelIdx / 2);
+  goToPanel(newPanelIdx, forceLoadChunk = true);
 }
